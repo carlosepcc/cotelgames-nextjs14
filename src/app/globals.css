@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body,header {
+  @apply text-body bg-surface font-sans
+}
+
+@media (prefers-color-scheme: dark) {
+  body,header {
+    @apply text-body-dark bg-surface-dark
+  }
+}
+

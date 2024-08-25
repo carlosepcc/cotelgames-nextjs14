@@ -1,0 +1,3 @@
+.round {
+    @apply rounded-lg sm:rounded-xl lg:rounded-2xl
+}
