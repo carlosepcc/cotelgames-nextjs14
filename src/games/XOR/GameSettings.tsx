@@ -4,14 +4,14 @@ export default function GameSettings({players,currentPlayer}:{players:{value:Pla
     return (
       <form>
         {players.map((player, playerIndex) => (
-          <div
+          <div key={player.value.value}
             className={`p-1.5 flex items-center gap-2 font-bold transition-all duration-500 round ${
               playerIndex == currentPlayer ? "animate-pulse" : "bg-transparent"
             }`}
           >
             {/* maxLength={1} */}
             <input
-              className={`max-w-10 p-1 text-center font-black text-xl sm:text-2xl outline-slate-300 bg-slate-100 round`}
+              className={`w-10 p-1 text-center font-black text-xl sm:text-2xl outline-slate-300 bg-slate-100 dark:bg-muted-dark dark:text-slate-300 round`}
               placeholder="Emoji or symbol.."
               value={player.value.emoji}
               onChange={(e) =>
@@ -19,14 +19,14 @@ export default function GameSettings({players,currentPlayer}:{players:{value:Pla
               }
             />
             <input
-              className={`p-2 px-3 bg-slate-100  outline-slate-300 focus:shadow-inner round`}
+              className={`p-2 px-3 bg-slate-100 dark:bg-muted-dark dark:text-slate-400  outline-slate-300 focus:shadow-inner round`}
               value={player.value.name}
               onChange={(e) =>
                 player.set({ ...player.value, name: e.target.value })
               }
             />
             <div
-              className="rounded-full max-w-7 hover:scale-110 hover:rotate-45 transition-all rounded-tl-none rotate-[30deg] translate-y-0.5 hover:outline-2 shadow-md outline-slate-200 outline-offset-1 "
+              className="rounded-full w-7 hover:scale-110 hover:rotate-45 transition-all rounded-tl-none rotate-[30deg] translate-y-0.5 hover:outline-2 shadow-md outline-slate-200 outline-offset-1 "
               style={{ backgroundColor: player.value.color }}
             >
               <input

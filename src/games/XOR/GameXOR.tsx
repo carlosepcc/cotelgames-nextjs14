@@ -99,10 +99,11 @@ const GameXOR = () => {
 
       <GameSettings players={players} currentPlayer={currentPlayer} />
       <div
-        className={`grid grid-cols-3 gap-2 bg-slate-300 shadow p-2 lg:p-4 lg:gap-4 round`}
+        className={`grid grid-cols-3 gap-2 bg-slate-300 dark:bg-muted shadow p-2 lg:p-4 lg:gap-4 round`}
       >
         {global.map((board, boardIndex) => (
           <Board
+          key={boardIndex}
             cells={board}
             evaluation={globalEval[boardIndex]}
             players={[players[0].value, players[1].value]}
@@ -120,7 +121,7 @@ const GameXOR = () => {
         ))}
       </div>
 
-      <div className="flex gap-2 fixed bottom-0 left-0 right-0 p-3 pt-4 bg-slate-200 border-t">
+      <div className="flex gap-2 fixed bottom-0 left-0 right-0 p-3 pt-4 bg-slate-200 dark:bg-muted-dark dark:border-muted-dark border-t backdrop-blur-2xl">
         <div className="flex gap-4 w-full max-w-[1024px] m-auto">
           <button
             className={`bg-slate-500 text-slate-100 py-2 px-4 pb-1 border-b-4 border-slate-600 shadow-md active:shadow-sm transition-all active:translate-y-1 active:brightness-90 active:scale-100 uppercase font-mono tracking-widest md:text-4xl md:py-4 md:px-8 md:pb-2 hover:scale-[1.02] hover:brightness-105  font-black grow ${style.round}`}
@@ -136,15 +137,15 @@ const GameXOR = () => {
           </button>
         </div>
       </div>
-      <details className="max-h-52 m-auto text-slate-200 mb-20">
-        <summary className="cursor-pointer hover:text-black">
+      <details className="max-h-52 m-auto text-muted dark:text-muted-dark mb-20">
+        <summary className="cursor-pointer hover:text-black dark:hover:text-white">
         Details
         </summary>
-        <div className="p-4 pb-20 rounded-xl shadow-inner bg-slate-800 text-slate-300 font-mono max-h-52 overflow-auto max-w-80 border-4 ">
+        <div className="p-4 pb-20 rounded-xl shadow-inner bg-slate-800 text-slate-300 font-mono max-h-52 overflow-auto max-w-[20rem] border-4 dark:border-muted-dark transition-all">
           <h3 className="my-1 font-bold m-auto text-slate-400">History</h3>
           <ul className="flex flex-col gap-2 items-end">
-            {history.map((hi) => (
-              <li className="flex items-center gap-2 font-bold text-slate-300">
+            {history.map((hi,index) => (
+              <li key={index} className="flex items-center gap-2 font-bold text-slate-300">
                 <span
                   className="font-black"
                   style={{ color: players[hi[2]].value.color }}
@@ -172,9 +173,9 @@ const MiniGrid = ({ index, color }: { index: number; color?: string }) => (
     {Array(9)
       .fill(null)
       .map((i, cellIndex) => (
-        <div
+        <div key={cellIndex}
           className="p-1 size-2 bg-slate-700"
-          style={{ background: cellIndex == index && (color || "dodgerblue") }}
+          style={{ background: cellIndex == index ? (color || "dodgerblue"):'' }}
         ></div>
       ))}
   </div>

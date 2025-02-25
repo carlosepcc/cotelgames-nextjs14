@@ -90,7 +90,8 @@ export function getMoveFromHi(hi: HistoryItem) {
 }
 
 export const getSavedGame = (key: string = LOCAL_SAVE_KEY): SaveItem => {
-  const savedGameItem = localStorage.getItem(key);
+   if (typeof window !== "undefined"){
+     const savedGameItem = localStorage.getItem(key);
   console.info("getting saved game...", savedGameItem);
 
   let savedGame: SaveItem = savedGameItem
@@ -102,6 +103,7 @@ export const getSavedGame = (key: string = LOCAL_SAVE_KEY): SaveItem => {
   savedGame.players ||= DEFAULT_GAME_DATA.players;
   savedGame.history ||= DEFAULT_GAME_DATA.history;
   console.log("decided saved game after properties check: ", savedGame);
-
   return savedGame;
+   }
+   return DEFAULT_GAME_DATA
 };

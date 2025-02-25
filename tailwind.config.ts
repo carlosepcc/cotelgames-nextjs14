@@ -9,11 +9,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
       colors: {
         primary: {
           DEFAULT: "dodgerblue",
@@ -28,8 +23,8 @@ const config: Config = {
           dark: "#fffe",
         },
         muted: {
-          DEFAULT: "#0005",
-          dark: "#fff5",
+          DEFAULT: "#0003",
+          dark: "#fff1",
         },
         surface: {
           DEFAULT: "#fefefe",
@@ -38,6 +33,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  // plugins: [],
 };
 export default config;

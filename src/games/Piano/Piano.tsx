@@ -14,7 +14,7 @@ const oscilatorTypes: OscillatorType[] = [
   "sine",
 ];
 const GamePiano = () => {
-  const [keys, setKeys] = useState(Array(15).fill(null));
+  const [keys, setKeys] = useState(Array(30).fill(null));
   const [oscillatorType, setOscillatorType] = useState<OscillatorType>(
     oscilatorTypes[0]
   );
@@ -46,10 +46,10 @@ const GamePiano = () => {
   }, [oscillatorType]);
 
   return (
-    <>
+    <div className="px-4 flex flex-col items-center max-h-[calc(100vh-)]">
       <h2 className="text-slate-500 text-4xl font-bold my-8 relative group active:brightness-150 flex uppercase justify-center gap-1">
         {titleArr.map((letter, index) => (
-          <button
+          <button key={letter}
             className="hover:scale-110 hover:shadow  group-acive:scale-y-150 active:brightness-200 active:scale-y-[4] hover:bg-muted transition-all p-1 px-2.5 rounded-xl border-b-4 border-b-[#0003]"
             style={{
               color: `hsl(${(1 + index) * 70},50%,50%)`,
@@ -65,6 +65,7 @@ const GamePiano = () => {
       <div className="flex gap-4 mb-4 px-4">
         {oscilatorTypes.map((ot) => (
           <button
+          key={ot}
             onClick={() => {
               setOscillatorType(ot);
               playSound(350, ot);
@@ -76,12 +77,12 @@ const GamePiano = () => {
           </button>
         ))} 
       </div>
-      <div className="grid grid-cols-3 justify-center items-center w-full gap-2">
+      <div className="grid grid-cols-3 justify-center items-center w-full gap-2 h-full overflow-auto" style={{scrollbarWidth:"none"}}>
         {keys.map((key, index) => (
-          <Key hue={index * 30} value={index} type={oscillatorType} />
+          <Key key={index} hue={index * 30} value={index} type={oscillatorType} />
         ))}
       </div>
-    </>
+    </div>
   );
 };
 export default GamePiano;
@@ -99,11 +100,11 @@ const Key = ({
     className="grow h-[80vh] min-w-20 max-h-32 rounded-3xl border-4 border-b-8 border-[#0002] active:translate-y-2 transition-all duration-500 active:duration-100 cursor-pointer hover:brightness-110 active:brightness-200 active:scale-95 group"
     onClick={() => playSound(value * 50 + 200, type)}
     style={{
-      background: `hsl(${hue},80%,40%)`,
+      background: `hsl(${hue},80%,50%)`,
       flexGrow: value,
-      color: `hsl(${hue},90%,60%)`,
+      color: `hsl(${hue},90%,75%)`,
     }}
   >
-    <span className="text-7xl font-black blur-[2px] group-active:blur-none">{value}</span>
+    <span className="text-7xl font-black blur-[1px] group-active:blur-none">{value}</span>
   </button>
 );

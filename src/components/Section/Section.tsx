@@ -5,11 +5,9 @@ interface Props {
 }
 function Section({children,heading}:Props) {
   return (
-    <section className="flex flex-col p-2 sm:p-4 gap-6 items-center m-auto">
+    <section className="flex flex-col p-2 py-4 sm:p-4 gap-6 items-center m-auto h-full">
       {heading && <Heading text={heading} />}
-      <section>
-        {children}
-      </section>
+      {children}
     </section>
   );
 }
