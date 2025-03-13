@@ -31,6 +31,7 @@ const CardBattle = () => {
       <div className="flex gap-3">
         {cardTypes.map((type, i) => (
           <button
+          key={type.name}
             className={`p-2 aspect-[1/1.5] min-w-10 shadow hover:shadow-xl hover:scale-110 active:scale-90 transition-all border-b-2 bg-white   outline-double rounded-sm
             ${
               selectedType == i
@@ -62,7 +63,7 @@ const CardBattle = () => {
               }`}
             >
               {Array.from({ length: card.value }, (_, index) => (
-                <div>
+                <div key={index}>
                   {cardTypes[selectedType].suits[card.suit].symbol ||
                     cardTypes[selectedType].suits[card.suit].name[0]}
                 </div>

@@ -47,6 +47,7 @@ const GameNature = () => {
       >
         {entities.map((entity, index) => (
           <div
+          key={entity.id}
             className={`absolute transition-all duration-500 active:duration-100`}
             style={{
               bottom: Math.floor(Math.random() * 300 + 20),

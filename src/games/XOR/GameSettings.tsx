@@ -6,7 +6,7 @@ export default function GameSettings({players,currentPlayer}:{players:{value:Pla
         {players.map((player, playerIndex) => (
           <div key={player.value.value}
             className={`p-1.5 flex items-center gap-2 font-bold transition-all duration-500 round ${
-              playerIndex == currentPlayer ? "animate-pulse" : "bg-transparent"
+              playerIndex == currentPlayer ? "shadow outline outline-black/5" : "bg-transparent"
             }`}
           >
             {/* maxLength={1} */}
