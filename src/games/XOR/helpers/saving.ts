@@ -1,13 +1,13 @@
 import { copy } from ".";
 const DEFAULT_PLAYER_X: Player = {
   value: 0,
-  color: "red",
+  color: "#f97316",
   emoji: "X",
   name: "Player X",
 };
 const DEFAULT_PLAYER_O: Player = {
   value: 1,
-  color: "dodgerblue",
+  color: "#64748b",
   emoji: "O",
   name: "Player O",
 };

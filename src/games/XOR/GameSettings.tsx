@@ -4,9 +4,12 @@ export default function GameSettings({players,currentPlayer}:{players:{value:Pla
     return (
       <form>
         {players.map((player, playerIndex) => (
-          <div key={player.value.value}
+          <div
+            key={player.value.value}
             className={`p-1.5 flex items-center gap-2 font-bold transition-all duration-500 round ${
-              playerIndex == currentPlayer ? "shadow outline outline-black/5" : "bg-transparent"
+              playerIndex == currentPlayer
+                ? "shadow outline outline-black/5"
+                : "bg-transparent"
             }`}
           >
             {/* maxLength={1} */}
@@ -14,9 +17,15 @@ export default function GameSettings({players,currentPlayer}:{players:{value:Pla
               className={`w-10 p-1 text-center font-black text-xl sm:text-2xl outline-slate-300 bg-slate-100 dark:bg-muted-dark dark:text-slate-300 round`}
               placeholder="Emoji or symbol.."
               value={player.value.emoji}
-              onChange={(e) =>
-                player.set({ ...player.value, emoji: e.target.value })
-              }
+              onChange={(e) => {
+                const newValue = e.target.value;
+                if (
+                  newValue.length <= 1 ||
+                  (newValue.length === 2 && /\p{Emoji}/u.test(newValue))
+                ) {
+                  player.set({ ...player.value, emoji: newValue });
+                }
+              }}
             />
             <input
               className={`p-2 px-3 bg-slate-100 dark:bg-muted-dark dark:text-slate-400  outline-slate-300 focus:shadow-inner round`}
