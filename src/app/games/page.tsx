@@ -9,7 +9,7 @@ function GamesPage() {
       <div className="flex flex-col gap-4 justify-center h-full">
         {games.map((game) => (
           <Link href={"games/" + game.code} key={game.code}>
-            <div className="p-8 text-xl bg-primary border-b-4 border-primary-dark font-bold rounded-xl">{game.title}</div>
+            <div className="p-8 text-xl bg-white border shadow font-bold rounded-xl hover:bg-gray-50 active:scale-95 transition-all">{game.title}</div>
           </Link>
         ))}
       </div>
