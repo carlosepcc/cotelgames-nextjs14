@@ -2,7 +2,7 @@ type PlayerValue = 1 | 0;
 type CellValue = PlayerValue | null;
 type TicTacToeBoard = CellValue[];
 type TicTacToeBoardGlobal = TicTacToeBoard[];
-type Player = {value?:number; emoji: string; name: string; color: string };
+type Player = {value:PlayerValue; emoji: string; name: string; color: string };
 
 type SaveItem = {
   history: GameHistory;

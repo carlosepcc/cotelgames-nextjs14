@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 import {
   getSavedGame,
@@ -39,6 +39,9 @@ const GameXOR = () => {
     { value: player0, set: setPlayer0 },
     { value: player1, set: setPlayer1 },
   ];
+  const [aiPlayer, setAiPlayer] = useState<0 | 1 | null>(1);
+  const [blocked, setBlocked] = useState<boolean>(false);
+  const [aiPlaying, setAiPlaying] = useState<boolean>(false);
 
   const resetBoard = () => {
     if (
@@ -47,6 +50,7 @@ const GameXOR = () => {
       )
     ) {
       setHistory(BLANK_HISTORY);
+      setBlocked(false);
       // localStorage.removeItem(LOCAL_SAVE_KEY) // Erase saved data
       playSound(140);
     }
@@ -58,12 +62,84 @@ const GameXOR = () => {
     setHistory(newHistory);
     return newHistory;
   }
+  function aiMakeMove() {
+    if (aiPlayer === null) return;
 
+    // Determine the target board from the last move's cell index
+    let targetBoard: number = 0;
+    if (lastMove) targetBoard = lastMove.cellIndex;
+
+    // Check if the target board is playable (not won and has empty cells)
+    const targetEval = globalEval[targetBoard];
+    const targetCells = global[targetBoard];
+    const isTargetPlayable =
+      targetEval.code === null && targetCells.some((cell) => cell === null);
+
+    let allowedBoards: number[] = [];
+
+    if (isTargetPlayable) {
+      // Must play in the target board
+      allowedBoards = [targetBoard];
+    } else {
+      // Find all playable boards (not won and have empty cells)
+      allowedBoards = globalEval
+        .map((evalObj, index) => ({
+          eval: evalObj,
+          cells: global[index],
+          index,
+        }))
+        .filter(
+          ({ eval: evaluation, cells }) =>
+            evaluation.code === null && cells.some((cell) => cell === null)
+        )
+        .map(({ index }) => index);
+    }
+
+    // No valid boards available (game over)
+    if (allowedBoards.length === 0) return;
+
+    // Select a random board from allowed boards
+    const selectedBoardIndex =
+      allowedBoards[Math.floor(Math.random() * allowedBoards.length)];
+    const selectedBoard = global[selectedBoardIndex];
+
+    // Get all empty cell indices in the selected board
+    const emptyCells: number[] = [];
+    selectedBoard.forEach((cell, index) => {
+      if (cell === null) emptyCells.push(index);
+    });
+
+    if (emptyCells.length === 0) return; // Should never happen due to previous checks
+
+    // Select a random empty cell
+    const selectedCellIndex =
+      emptyCells[Math.floor(Math.random() * emptyCells.length)];
+
+    // Make the move and unblock the UI
+    setMove(selectedBoardIndex, selectedCellIndex, currentPlayer);
+    setBlocked(false);
+  }
   useEffect(
     () => saveGame(history, [player0, player1]),
     [history, player0, player1]
   );
+  useEffect(() => {
+    if (aiPlayer === null) return;
+    if (currentPlayer !== aiPlayer) {
+      setBlocked(false);
+      return;
+    }
 
+    setBlocked(true);
+    setAiPlaying(true);
+    setTimeout(() => {
+      aiMakeMove();
+      setAiPlaying(false);
+    }, Math.floor(Math.random() * 2000 + 1000)); // Adds slight delay for better UX
+  }, [currentPlayer, aiPlayer]);
+  useEffect(() => {
+    if (currentPlayer === aiPlayer) aiMakeMove();
+  }, []);
   function setMove(
     boardIndex: number,
     cellIndex: number,
@@ -92,18 +168,48 @@ const GameXOR = () => {
   return (
     <div className="flex flex-col gap-8 items-center justify-center  text-slate-500 pb-20">
       <h1 className="text-2xl font-bold">
-          <span>
-            TicTacToe <span className="text-slate-400">Recursive</span>
-          </span>
+        <span>
+          TicTacToe <span className="text-slate-400">Recursive</span>
+        </span>
       </h1>
-
+      <div className="flex gap-6">
+        <b className="text-sm flex gap-1 mr-2"><span className="-mt-0.5">🤖</span><span>Dumb AI</span></b>
+        {players.map((player) => (
+          <button
+            className={`uppercase text-sm font-bold ${
+              aiPlayer === player.value.value ? "text-amber-500" : ""
+            }`}
+            onClick={() =>
+              setAiPlayer(
+                player.value.value != aiPlayer ? player.value.value : null
+              )
+            }
+          >
+            Player {player.value.emoji}
+          </button>
+        ))}
+      </div>
+      {aiPlaying && (
+        <div
+          className="text-7xl p-1 rotate-45 animate-bounce "
+          style={{
+            position: "fixed",
+            left: "0",
+            top: "20%",
+          }}
+        >
+          🤖
+        </div>
+      )}
       <GameSettings players={players} currentPlayer={currentPlayer} />
       <div
-        className={`grid grid-cols-3 gap-2 bg-slate-300 dark:bg-muted shadow p-2 lg:p-4 lg:gap-4 round`}
+        className={`grid grid-cols-3 gap-2 bg-slate-300 dark:bg-muted shadow p-2 lg:p-4 lg:gap-4 round ${
+          blocked || aiPlaying ? "pointer-events-none" : ""
+        }`}
       >
         {global.map((board, boardIndex) => (
           <Board
-          key={boardIndex}
+            key={boardIndex}
             cells={board}
             evaluation={globalEval[boardIndex]}
             players={[players[0].value, players[1].value]}
@@ -139,13 +245,16 @@ const GameXOR = () => {
       </div>
       <details className="max-h-52 m-auto text-muted dark:text-muted-dark mb-20">
         <summary className="cursor-pointer hover:text-black dark:hover:text-white">
-        Details
+          Details
         </summary>
         <div className="p-4 pb-20 rounded-xl shadow-inner bg-slate-800 text-slate-300 font-mono max-h-52 overflow-auto max-w-[20rem] border-4 dark:border-muted-dark transition-all">
           <h3 className="my-1 font-bold m-auto text-slate-400">History</h3>
           <ul className="flex flex-col gap-2 items-end">
-            {history.map((hi,index) => (
-              <li key={index} className="flex items-center gap-2 font-bold text-slate-300">
+            {history.map((hi, index) => (
+              <li
+                key={index}
+                className="flex items-center gap-2 font-bold text-slate-300"
+              >
                 <span
                   className="font-black"
                   style={{ color: players[hi[2]].value.color }}
@@ -173,9 +282,12 @@ const MiniGrid = ({ index, color }: { index: number; color?: string }) => (
     {Array(9)
       .fill(null)
       .map((i, cellIndex) => (
-        <div key={cellIndex}
+        <div
+          key={cellIndex}
           className="p-1 size-2 bg-slate-700"
-          style={{ background: cellIndex == index ? (color || "dodgerblue"):'' }}
+          style={{
+            background: cellIndex == index ? color || "dodgerblue" : "",
+          }}
         ></div>
       ))}
   </div>
