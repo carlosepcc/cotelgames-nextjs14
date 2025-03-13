@@ -173,7 +173,7 @@ const GameXOR = () => {
         </span>
       </h1>
       <div className="flex gap-6">
-        <b className="text-sm flex gap-1 mr-2"><span className="-mt-0.5">🤖</span><span>Dumb AI</span></b>
+        <b className="text-sm flex gap-1"><span className="-mt-0.5">🤖</span><span className="opacity-80">Use Dumb AI for</span></b>
         {players.map((player) => (
           <button
           key={player.value.value}
