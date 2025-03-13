@@ -176,6 +176,7 @@ const GameXOR = () => {
         <b className="text-sm flex gap-1 mr-2"><span className="-mt-0.5">🤖</span><span>Dumb AI</span></b>
         {players.map((player) => (
           <button
+          key={player.value.value}
             className={`uppercase text-sm font-bold ${
               aiPlayer === player.value.value ? "text-amber-500" : ""
             }`}
