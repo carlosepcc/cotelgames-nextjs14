@@ -21,7 +21,7 @@ type SaveItem = {
     | "playing"
     | "won1"
     | "won0"
-    | "table"
+    | "draw"
     | "full"; 
 type BoardEvaluation = {
   detail:BoardEvaluationDetail ,
