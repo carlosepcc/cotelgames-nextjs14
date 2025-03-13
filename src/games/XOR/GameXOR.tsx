@@ -39,7 +39,7 @@ const GameXOR = () => {
     { value: player0, set: setPlayer0 },
     { value: player1, set: setPlayer1 },
   ];
-  const [aiPlayer, setAiPlayer] = useState<0 | 1 | null>(1);
+  const [aiPlayer, setAiPlayer] = useState<0 | 1 | null>(null);
   const [blocked, setBlocked] = useState<boolean>(false);
   const [aiPlaying, setAiPlaying] = useState<boolean>(false);
 
