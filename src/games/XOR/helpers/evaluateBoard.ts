@@ -16,7 +16,7 @@ const DETAILS_CODE_MAPPINGS: { [key: string]: BoardEvaluationCode } = {
   'won1': 1,
   'full': 4,
   'empty': null,
-  'table': null,
+  'draw': null,
   'playing': null,
 }
 
@@ -45,3 +45,27 @@ console.log('evaluating board: ',board)
   return evaluation
 }
 
+export function evaluateGlobalBoard(
+  evaluations: BoardEvaluation[]
+): BoardEvaluation {
+  // Check for winning combinations using board evaluations as cells
+  for (const combo of WINNING_COMBINATIONS) {
+    const [a, b, c] = combo;
+    const codeA = evaluations[a]?.code;
+    const codeB = evaluations[b]?.code;
+    const codeC = evaluations[c]?.code;
+
+    if (codeA !== null && codeA === codeB && codeB === codeC) {
+      return {
+        code: codeA,
+        detail: codeA === 0 ? "globalWon0" : "globalWon1",
+      };
+    }
+  }
+
+  // Check for draw (all boards completed)
+  const allCompleted = evaluations.every((e) => e.code !== null);
+  return allCompleted
+    ? { code: 4, detail: "globalDraw" }
+    : { code: null, detail: "globalPlaying" };
+}

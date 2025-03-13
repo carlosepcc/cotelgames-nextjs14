@@ -12,6 +12,7 @@ import {
 import { GameSettings, Board, gameXORInfo } from ".";
 import { playSound } from "./helpers/sfx";
 import { BLANK_HISTORY } from "./helpers/saving";
+import { evaluateGlobalBoard } from "./helpers/evaluateBoard";
 // import { useTranslation } from "react-i18next";
 const { title } = gameXORInfo;
 export const style = {
@@ -33,7 +34,16 @@ const GameXOR = () => {
 
   const global = buildGlobal(history);
   const globalEval: BoardEvaluation[] = evaluateAllBoards(global);
-
+  const globalEvaluation = evaluateGlobalBoard(globalEval);
+  // Add game over state
+  const [gameOver, setGameOver] = useState(false);
+  // Update useEffect to check game state
+  useEffect(() => {
+    if (globalEvaluation.code !== null) {
+      setGameOver(true);
+      setBlocked(true);
+    }
+  }, [globalEvaluation]);
   //Players proxy array
   const players: { value: Player; set: Function }[] = [
     { value: player0, set: setPlayer0 },
@@ -51,6 +61,7 @@ const GameXOR = () => {
     ) {
       setHistory(BLANK_HISTORY);
       setBlocked(false);
+      setGameOver(false);
       // localStorage.removeItem(LOCAL_SAVE_KEY) // Erase saved data
       playSound(140);
     }
@@ -124,19 +135,13 @@ const GameXOR = () => {
     [history, player0, player1]
   );
   useEffect(() => {
-    if (aiPlayer === null) return;
-    if (currentPlayer !== aiPlayer) {
-      setBlocked(false);
-      return;
-    }
-
+    if (gameOver || currentPlayer !== aiPlayer) return;
     setBlocked(true);
-    setAiPlaying(true);
     setTimeout(() => {
       aiMakeMove();
-      setAiPlaying(false);
-    }, Math.floor(Math.random() * 2000 + 1000)); // Adds slight delay for better UX
-  }, [currentPlayer, aiPlayer]);
+    }, Math.floor(Math.random() * 3000 + 2000));
+  }, [currentPlayer, gameOver]);
+
   useEffect(() => {
     if (currentPlayer === aiPlayer) aiMakeMove();
   }, []);
@@ -145,12 +150,13 @@ const GameXOR = () => {
     cellIndex: number,
     value: PlayerValue = currentPlayer
   ): Move | null {
-    const newHistoryI = [boardIndex, cellIndex, value];
-    pushHistory(newHistoryI);
+    if (gameOver) return null;
+    const newHistoryItem = [boardIndex, cellIndex, value];
+    pushHistory(newHistoryItem);
 
     playSound((currentPlayer + 3) * 100); //Play a different starting tone for every player
 
-    return getMoveFromHi(newHistoryI);
+    return getMoveFromHi(newHistoryItem);
   }
   function undo() {
     console.info("UNDO");
@@ -164,19 +170,46 @@ const GameXOR = () => {
       resetBoard();
     }
   }
+  // Add victory message component
+  const renderGameOver = () => {
+    if (!gameOver) return null;
 
+    return (
+      <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-xl text-center">
+          <h2 className="text-2xl font-bold mb-4">
+            {globalEvaluation.code === 4
+              ? "Game Draw!"
+              : `${players[globalEvaluation.code!]?.value.emoji} ${
+                  players[globalEvaluation.code!]?.value.name
+                } Wins!`}
+          </h2>
+          <button
+            className="bg-amber-500 text-white px-6 py-3 rounded-lg hover:bg-amber-600"
+            onClick={resetBoard}
+          >
+            Play Again
+          </button>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="flex flex-col gap-8 items-center justify-center  text-slate-500 pb-20">
+      {renderGameOver()}
       <h1 className="text-2xl font-bold">
         <span>
           TicTacToe <span className="text-slate-400">Recursive</span>
         </span>
       </h1>
       <div className="flex gap-6">
-        <b className="text-sm flex gap-1"><span className="-mt-0.5">🤖</span><span className="opacity-80">Use Dumb AI for</span></b>
+        <b className="text-sm flex gap-1">
+          <span className="-mt-0.5">🤖</span>
+          <span className="opacity-80">Use Dumb AI for</span>
+        </b>
         {players.map((player) => (
           <button
-          key={player.value.value}
+            key={player.value.value}
             className={`uppercase text-sm font-bold ${
               aiPlayer === player.value.value ? "text-amber-500" : ""
             }`}
@@ -217,11 +250,13 @@ const GameXOR = () => {
             color={players[currentPlayer].value.color}
             onMove={(cellIndex) => setMove(boardIndex, cellIndex)}
             enabled={
-              lastMove && globalEval[lastMove.cellIndex].code == null
+              !gameOver &&
+              (lastMove && globalEval[lastMove.cellIndex].code == null
                 ? boardIndex == lastMove.cellIndex
-                : true
+                : true)
             }
             noFloating={
+              gameOver ||
               !(lastMove && globalEval[lastMove.cellIndex].code == null)
             }
           />
